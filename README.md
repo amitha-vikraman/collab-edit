@@ -12,15 +12,15 @@ This project is a lightweight real-time collaborative text editor built using Ja
 ## 2. **Start Server + Client**
 
 From the project root:
-  `docker compose up --build`
+  ```docker compose up --build```
 
 
 You should see:
 - Collab Server running on ws://localhost:8025/doc
 - Connected. Type text and press Enter:
 
-##3. **Open Additional Clients**
+## 3. **Open Additional Clients**
 In a new terminal:
-  `docker compose run collab-client`
+  ```docker compose run collab-client```
 
 - Type messages in any client window — all connected clients will receive updates instantly.
