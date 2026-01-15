@@ -1,4 +1,4 @@
-##**CLI Collaborative Editor (WebSocket + Java + Docker)**
+# **CLI Collaborative Editor (WebSocket + Java + Docker)**
 
 This project is a lightweight real-time collaborative text editor built using Java, WebSockets, and Docker, designed to run entirely in a command-line interface without any graphical UI dependencies. Multiple clients can connect simultaneously to a central WebSocket server and collaboratively update a shared document in real time. The server manages active client sessions, broadcasts updates instantly, and maintains the in-memory document state, enabling low-latency communication and seamless collaboration. The entire application is containerized, making it fully portable and easy to run on any machine without requiring local Java installation.
 
