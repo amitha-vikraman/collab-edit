@@ -1,0 +1,13 @@
+services:
+  collab-server:
+    build: ./server
+    container_name: collab-server
+    ports:
+      - "8025:8025"
+
+  collab-client:
+    build: ./client
+    depends_on:
+      - collab-server
+    stdin_open: true
+    tty: true
