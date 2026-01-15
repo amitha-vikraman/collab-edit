@@ -4,7 +4,7 @@ This project is a lightweight real-time collaborative text editor built using Ja
 
   The project demonstrates key backend and distributed systems concepts such as asynchronous messaging, concurrent session handling, event-driven communication, and containerized deployment using multi-stage Docker builds. It serves as a practical foundation for understanding how real-time systems like collaborative editors, chat platforms, and live dashboards operate under the hood. The architecture is intentionally minimal yet extensible, allowing future enhancements such as conflict resolution using CRDTs or vector clocks, persistent storage, user identity management, and scalability improvements — making it an excellent portfolio project for senior backend and platform engineering roles.
 
-1.## **Prerequisites:**
+## 1. **Prerequisites:**
 **Install:**
 - Docker
 - Docker Compose
