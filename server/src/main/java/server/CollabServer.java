@@ -20,14 +20,11 @@ public class CollabServer {
     private static final Set<Session> sessions =
             Collections.synchronizedSet(new HashSet<>());
 
-    private static final StringBuilder document = new StringBuilder();
-    private static final List<Operation> history = new ArrayList<>();
-
     @OnOpen
     public void onOpen(Session session) throws Exception {
         sessions.add(session);
         session.getAsyncRemote().sendText(
-                "Connected.\nCurrent Document:\n" + document.toString()
+                "Connected."
         );
         System.out.println("Client connected: " + session.getId());
     }
@@ -38,25 +35,41 @@ public class CollabServer {
             ObjectMapper mapper = new ObjectMapper();
             Operation incoming = mapper.readValue(message, Operation.class);
 
-            // Simple OT: shift position if concurrent ops happened before
+            // Load shared state from Redis
+            String document = RedisStore.getDocument();
+            List<String> historyJson = RedisStore.getHistory();
+
+            List<Operation> history = new ArrayList<>();
+            for (String h : historyJson) {
+                history.add(mapper.readValue(h, Operation.class));
+            }
+
+            // --- OT Transform ---
             for (Operation past : history) {
                 if (VectorClock.isConcurrent(incoming.vectorClock, past.vectorClock)) {
                     if (past.position <= incoming.position) {
-                        incoming.position += past.text.length();
+                        incoming.position += past.text.length() + 1; // +1 for newline
                     }
                 }
             }
 
+            // Apply operation
             String textWithNewline = incoming.text + "\n";
-            document.insert(incoming.position, textWithNewline);
-            history.add(incoming);
+            StringBuilder updatedDoc = new StringBuilder(document);
+            updatedDoc.insert(incoming.position, textWithNewline);
 
-            broadcast(">" + document.toString());
+            // Persist back to Redis
+            RedisStore.saveDocument(updatedDoc.toString());
+            RedisStore.appendHistory(message);
+
+            // Broadcast to connected clients
+            broadcast(">" + updatedDoc.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
 
     @OnClose

@@ -1,9 +1,8 @@
 services:
   collab-server:
     build: ./server
-    container_name: collab-src.main.java.server
-    ports:
-      - "8025:8025"
+    expose:
+      - "8025"
 
   collab-client:
     build: ./client
@@ -11,3 +10,8 @@ services:
       - collab-server
     stdin_open: true
     tty: true
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
