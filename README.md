@@ -35,3 +35,5 @@ In a new terminal:
 - Implemented JSON-based message exchange using Jackson for structured operation serialization and deserialization.
 - Packaged the application using multi-stage Docker builds, allowing the system to run without requiring Java or Maven installed locally.
 - Enabled multi-container orchestration using Docker Compose for seamless startup of server and multiple clients.
+- Enabled horizontal scaling of the WebSocket server using Docker Compose by running multiple container replicas without host port binding.
+- Leveraged Docker’s internal service networking and load balancing to distribute client connections across multiple server instances.
