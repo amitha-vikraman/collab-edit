@@ -24,3 +24,16 @@ In a new terminal:
   ```docker compose run collab-client```
 
 - Type messages in any client window — all connected clients will receive updates instantly.
+
+## Recent Enhancements
+
+- Added WebSocket-based real-time collaboration using Jakarta WebSocket (Tyrus), enabling multiple clients to connect and edit a shared document concurrently.
+- Implemented a lightweight Operational Transformation (OT) mechanism on the server to automatically resolve concurrent edits by adjusting insertion positions.
+- Introduced Vector Clocks to detect concurrent operations and preserve causal ordering between edits across distributed clients.
+- Enhanced document handling to support line-based input, ensuring each client entry is appended as a new line for better readability and realistic editor behavior.
+- Maintained an in-memory operation history to enable transformation logic and ensure consistency across all connected clients.
+- Implemented JSON-based message exchange using Jackson for structured operation serialization and deserialization.
+- Packaged the application using multi-stage Docker builds, allowing the system to run without requiring Java or Maven installed locally.
+- Enabled multi-container orchestration using Docker Compose for seamless startup of server and multiple clients.
+- Enabled horizontal scaling of the WebSocket server using Docker Compose by running multiple container replicas without host port binding.
+- Leveraged Docker’s internal service networking and load balancing to distribute client connections across multiple server instances.
