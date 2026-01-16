@@ -1,7 +1,7 @@
 services:
   collab-server:
     build: ./server
-    container_name: collab-server
+    container_name: collab-src.main.java.server
     ports:
       - "8025:8025"
 

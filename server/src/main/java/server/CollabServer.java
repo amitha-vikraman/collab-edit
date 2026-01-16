@@ -1,20 +1,27 @@
+package server;
+
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import org.glassfish.tyrus.server.Server;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import model.Operation;
+import model.VectorClock;
+
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @ServerEndpoint("/doc")
 public class CollabServer {
-//Conflict resolution (OT/CRDT)
-//User presence
-//Version history
+
     private static final Set<Session> sessions =
             Collections.synchronizedSet(new HashSet<>());
 
     private static final StringBuilder document = new StringBuilder();
+    private static final List<Operation> history = new ArrayList<>();
 
     @OnOpen
     public void onOpen(Session session) throws Exception {
@@ -26,12 +33,31 @@ public class CollabServer {
     }
 
     @OnMessage
-    public void onMessage(String message, Session sender) {
-        synchronized (document) {
-            document.append(message).append("\n");
+    public synchronized void onMessage(String message, Session session) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Operation incoming = mapper.readValue(message, Operation.class);
+
+            // Simple OT: shift position if concurrent ops happened before
+            for (Operation past : history) {
+                if (VectorClock.isConcurrent(incoming.vectorClock, past.vectorClock)) {
+                    if (past.position <= incoming.position) {
+                        incoming.position += past.text.length();
+                    }
+                }
+            }
+
+            String textWithNewline = incoming.text + "\n";
+            document.insert(incoming.position, textWithNewline);
+            history.add(incoming);
+
+            broadcast(">" + document.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        broadcast("[" + sender.getId() + "] " + message);
     }
+
 
     @OnClose
     public void onClose(Session session) {
@@ -57,3 +83,6 @@ public class CollabServer {
         Thread.currentThread().join();
     }
 }
+//Conflict resolution (OT/CRDT)
+//User presence
+//Version history
